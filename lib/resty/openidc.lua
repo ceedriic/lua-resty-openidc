@@ -260,11 +260,16 @@ local function openidc_call_userinfo_endpoint(opts, access_token)
   end
 
   local httpc = http.new()
-  local res, err = httpc:request_uri(opts.discovery.userinfo_endpoint, {
+  local params = {
     headers = {
-      ["Authorization"] = "Bearer "..access_token,
+      ["Authorization"] = "Bearer "..access_token
     }
-  })
+  }
+  if opts.userinfo_post then
+    params.method = "POST"
+    params.body = ""
+  end
+  local res, err = httpc:request_uri(opts.discovery.userinfo_endpoint, params)
   if not res then
     err = "accessing userinfo endpoint ("..opts.discovery.userinfo_endpoint..") failed: "..err
     ngx.log(ngx.ERR, err)
